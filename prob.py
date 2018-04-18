@@ -13,7 +13,7 @@ process_info=str()
 lock=threading.Lock()
 
 pFirstChar=list()
-pOccur=list()
+pLastChar=list()
 pCharWithNext=list()
 pCharWithPrev=list()
 
@@ -29,13 +29,13 @@ def updateDict(d):
 	sum=d['sum']
 	del d['sum']
 	for k,v in d.items():
-		d[k]=v/sum
+		d[k]=math.log(v/sum)
 
 def init():
 	global pFirstChar, pOccur, pCharWithNext, pCharWithPrev
 	for ch_list in util.py2ch:
 		pFirstChar.append(getNewDict(ch_list))
-		pOccur.append(getNewDict(ch_list))
+		pLastChar.append(getNewDict(ch_list))
 	for i in range(len(util.py2idx)):
 		pCharWithNext.append(list())
 		pCharWithPrev.append(list())
@@ -45,12 +45,12 @@ def init():
 			pCharWithPrev[i].append(getNewDict(util.py2ch[i]))
 
 def calculate():
-	global pFirstChar, pOccur, pCharWithNext, pCharWithPrev
+	global pFirstChar, pLastChar, pCharWithNext, pCharWithPrev
 	print('Calculating pFirstChar...')
 	for d in pFirstChar:
 		updateDict(d)
 	print('Calculating pOccur...')
-	for d in pOccur:
+	for d in pLastChar:
 		updateDict(d)
 	print('Calculating pCharWithNext...')
 	for l in pCharWithNext:
@@ -75,6 +75,12 @@ def process(content):
 			if ch in util.py2ch[py]:
 				pFirstChar[py][ch]+=1
 				pFirstChar[py]['sum']+=1
+		if seg[-1] in util.ch2idx:
+			py=util.idx_of_py(lazy_pinyin(seg[-1], style=Style.NORMAL)[0])
+			ch=util.ch2idx[seg[-1]]
+			if ch in util.py2ch[py]:
+				pLastChar[py][ch]+=1
+				pLastChar[py]['sum']+=1
 		py_seg=lazy_pinyin(seg, style=Style.NORMAL)
 		for ch,py in zip(seg,py_seg):
 			if ch not in util.ch2idx:
@@ -85,9 +91,6 @@ def process(content):
 				continue
 			ch_content.append(ch)
 			py_content.append(py)
-	for ch, py in zip(ch_content, py_content):
-		pOccur[py][ch]+=1
-		pOccur[py]['sum']+=1
 	for i in range(len(ch_content)-1):
 		pCharWithNext[py_content[i]][py_content[i+1]][ch_content[i]]+=1
 		pCharWithNext[py_content[i]][py_content[i+1]]['sum']+=1
@@ -172,16 +175,11 @@ lock.acquire()
 content.put(None)
 lock.release()
 thread1.join()
-print('\nSaving original data')
-with open('count.dat', 'wb') as fp:
-	pickle.dump(pFirstChar, fp)
-	pickle.dump(pOccur, fp)
-	pickle.dump(pCharWithNext, fp)
-	pickle.dump(pCharWithPrev, fp)
 calculate()
+print('\nSaving data')
 with open('prob.dat', 'wb') as fp:
 	pickle.dump(pFirstChar, fp)
-	pickle.dump(pOccur, fp)
+	pickle.dump(pLastChar, fp)
 	pickle.dump(pCharWithNext, fp)
 	pickle.dump(pCharWithPrev, fp)
 print('Finished.')
