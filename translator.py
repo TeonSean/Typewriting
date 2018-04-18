@@ -23,9 +23,9 @@ def getOptimal(pylist, chlist, cur_idx, prefix_score):
 	py=pylist[cur_idx]
 	for ch in util.py2ch[pylist[cur_idx]]:
 		if cur_idx < len(pylist)-1 :
-			score=math.log(alpha*pCharWithPrev[py][chlist[cur_idx - 1]][ch]+(1-alpha)*(pCharWithNext[py][pylist[cur_idx+1]][ch]))
+			score=alpha*pCharWithPrev[py][chlist[cur_idx - 1]][ch]+(1-alpha)*(pCharWithNext[py][pylist[cur_idx+1]][ch])
 		else:
-			score=math.log(pCharWithPrev[py][chlist[cur_idx - 1]][ch])
+			score=pCharWithPrev[py][chlist[cur_idx - 1]][ch]
 		score+=prefix_score
 		if score < optimal_score:
 			continue
