@@ -42,6 +42,7 @@ def input2array(input):
 	return input
 
 def array2output(output):
+	re=list()
 	for i in range(len(output)):
-		output[i]=idx2ch[output[i]]
-	return ''.join(output)
+		re.append(idx2ch[output[i]])
+	return ''.join(re)
