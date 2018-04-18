@@ -9,36 +9,35 @@ with open('prob.dat', 'rb') as fp:
 	pCharWithNext=pickle.load(fp)
 	pCharWithPrev=pickle.load(fp)
 print('done')
+optimal_list=list()
+optimal_score=float('-inf')
+alpha=0.5
 
-def getCandCnt(pylist):
-	cnt=1
-	for py in pylist:
-		cnt*=len(util.py2ch[py])
-	return cnt
-
-def int2array(n, pylist):
-	re=list()
-	pylist=list(reversed(pylist))
-	for py in pylist:
-		length=len(util.py2ch[py])
-		re.append(util.py2ch[py][n%length])
-		n //= length
-	return list(reversed(re))
-
-def getSentenceScore(chlist, pylist):
-	return 1
+def getOptimal(pylist, chlist, cur_idx, prefix_score):
+	global optimal_list, optimal_score,alpha
+	if cur_idx == len(pylist):
+		if prefix_score > optimal_score:
+			optimal_score=prefix_score
+			optimal_list=chlist
+		return
+	py=pylist[cur_idx]
+	for ch in util.py2ch[pylist[cur_idx]]:
+		if cur_idx < len(pylist)-1 :
+			score=alpha*pCharWithPrev[py][chlist[cur_idx - 1]][ch]+(1-alpha)*(pCharWithNext[py][pylist[cur_idx+1]][ch])
+		else:
+			score=pCharWithPrev[py][chlist[cur_idx - 1]][ch]
+		score*=prefix_score
+		if score < optimal_score:
+			continue
+		getOptimal(pylist, chlist+[ch], cur_idx+1, score)
 
 def translate(input):
+	global optimal_list, optimal_score
 	pylist=util.input2array(input)
 	if len(pylist) == 0:
 		return None
-	cnt=getCandCnt(pylist)
 	optimal_list=list()
-	optimal_score=float("-inf")
-	for i in range(cnt):
-		chlist=int2array(i, pylist)
-		score=getSentenceScore(chlist, pylist)
-		if score > optimal_score:
-			optimal_score=score
-			optimal_list=chlist
-	return util.array2output(chlist)
+	optimal_score=float('-inf')
+	for ch in util.py2ch[pylist[0]]:
+		getOptimal(pylist, [ch], 1, 1)
+	return util.array2output(optimal_list)
