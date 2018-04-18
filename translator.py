@@ -5,7 +5,7 @@ import math
 print('loading data...')
 with open('prob.dat', 'rb') as fp:
 	pFirstChar=pickle.load(fp)
-	pOccur=pickle.load(fp)
+	pLastChar=pickle.load(fp)
 	pCharWithNext=pickle.load(fp)
 	pCharWithPrev=pickle.load(fp)
 print('done')
@@ -23,10 +23,10 @@ def getOptimal(pylist, chlist, cur_idx, prefix_score):
 	py=pylist[cur_idx]
 	for ch in util.py2ch[pylist[cur_idx]]:
 		if cur_idx < len(pylist)-1 :
-			score=alpha*pCharWithPrev[py][chlist[cur_idx - 1]][ch]+(1-alpha)*(pCharWithNext[py][pylist[cur_idx+1]][ch])
+			score=math.log(alpha*pCharWithPrev[py][chlist[cur_idx - 1]][ch]+(1-alpha)*(pCharWithNext[py][pylist[cur_idx+1]][ch]))
 		else:
-			score=pCharWithPrev[py][chlist[cur_idx - 1]][ch]
-		score*=prefix_score
+			score=math.log(pCharWithPrev[py][chlist[cur_idx - 1]][ch])
+		score+=prefix_score
 		if score < optimal_score:
 			continue
 		getOptimal(pylist, chlist+[ch], cur_idx+1, score)
@@ -39,5 +39,5 @@ def translate(input):
 	optimal_list=list()
 	optimal_score=float('-inf')
 	for ch in util.py2ch[pylist[0]]:
-		getOptimal(pylist, [ch], 1, 1)
+		getOptimal(pylist, [ch], 1, math.log(1))
 	return util.array2output(optimal_list)
