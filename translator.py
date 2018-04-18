@@ -10,12 +10,12 @@ with open('prob.dat', 'rb') as fp:
 	pCharWithPrev=pickle.load(fp)
 print('done')
 
-def probFirstChar(py0, py1, ch_idx):
+def probFirstChar(py0, py1, ch_idx, multiplier):
 	if not py1:
 		return pFirstChar[py0][ch_idx]*multiplier
 	alpha=0.3
 	re=alpha*pFirstChar[py0][ch_idx]+(1-alpha)*pCharWithNext[py0][py1][ch_idx]
-	return re
+	return re*multiplier
 
 def getFirstChar(py0, py1):
 	cand=util.py2ch[py0]
@@ -27,16 +27,16 @@ def getFirstChar(py0, py1):
 	for i in range(len(occur)):
 		multiplier[occur[i][0]]=tmp
 		tmp-=descend
-	sortable=list(map(lambda x:[x, probFirstChar(py0, py1, x)], cand))
+	sortable=list(map(lambda x:[x, probFirstChar(py0, py1, x, multiplier[x])], cand))
 	sortable.sort(key=lambda x:x[1], reverse=True)
 	return sortable[0][0]
 
-def probNextChar(py, prev, next, cur):
+def probNextChar(py, prev, next, cur, multiplier):
 	if not next:
-		return pCharWithPrev[py][prev][cur]
+		return pCharWithPrev[py][prev][cur]*multiplier
 	alpha=0.5
 	re=alpha*pCharWithPrev[py][prev][cur]+(1-alpha)*pCharWithNext[py][next][cur]
-	return re
+	return re*multiplier
 
 def getNextChar(py, ch, next):
 	cand=util.py2ch[py]
@@ -48,7 +48,7 @@ def getNextChar(py, ch, next):
 	for i in range(len(occur)):
 		multiplier[occur[i][0]]=tmp
 		tmp-=descend
-	sortable=list(map(lambda x:[x, probNextChar(py, ch, next, x)], cand))
+	sortable=list(map(lambda x:[x, probNextChar(py, ch, next, x, multiplier[x])], cand))
 	sortable.sort(key=lambda x:x[1], reverse=True)
 	return sortable[0][0]
 

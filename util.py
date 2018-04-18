@@ -27,19 +27,17 @@ correction={'lve':'lue', 'nve':'nue', 'fenɡ':'feng', 'bia':'bian', 'puo':'po', 
 			'yie':'ye', 'piang':'pian', 'we':'wei', 'jion':'jiang', 'xhao':'shao', \
 			'tia':'tiao', 'ng':'en', 'sho':'shou', 'n':'en', 'f':'feng', 'm':'fu'}
 
-def idx_of_py(py, ch):
+def idx_of_py(py):
 	if py in py2idx:
 		return py2idx[py]
 	else:
-		try:
-			return py2idx[correction[py]]
-		except KeyError as e:
-			print('\n\n'+py+'   '+ch+'\n\n')
-			return None
+		return py2idx[correction[py]]
 
 def input2array(input):
 	input=input.strip().split(' ')
 	for i in range(len(input)):
+		if input[i] not in py2idx:
+			raise ValueError('Invalid input: %s' % input[i])
 		input[i]=py2idx[input[i]]
 	return input
 

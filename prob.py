@@ -70,22 +70,20 @@ def process(content):
 		if len(seg) == 0:
 			continue
 		if seg[0] in util.ch2idx:
-			py=util.idx_of_py(lazy_pinyin(seg[0], style=Style.NORMAL)[0], seg[0])
-			if py:
-				ch=util.ch2idx[seg[0]]
-				if ch in util.py2ch[py]:
-					pFirstChar[py][ch]+=1
-					pFirstChar[py]['sum']+=1
+			py=util.idx_of_py(lazy_pinyin(seg[0], style=Style.NORMAL)[0])
+			ch=util.ch2idx[seg[0]]
+			if ch in util.py2ch[py]:
+				pFirstChar[py][ch]+=1
+				pFirstChar[py]['sum']+=1
 		py_seg=lazy_pinyin(seg, style=Style.NORMAL)
 		for ch,py in zip(seg,py_seg):
 			if ch not in util.ch2idx:
 				continue
-			py=util.idx_of_py(py, ch)
-			if not py:
-				continue
+			py=util.idx_of_py(py)
+			ch=util.ch2idx[ch]
 			if ch not in util.py2ch[py]:
 				continue
-			ch_content.append(util.ch2idx[ch])
+			ch_content.append(ch)
 			py_content.append(py)
 	for ch, py in zip(ch_content, py_content):
 		pOccur[py][ch]+=1
