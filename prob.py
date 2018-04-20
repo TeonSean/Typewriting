@@ -29,7 +29,7 @@ def updateDict(d):
 	sum=d['sum']
 	del d['sum']
 	for k,v in d.items():
-		d[k]=math.log(v/sum)
+		d[k]=v/sum
 
 def init():
 	global pFirstChar, pOccur, pCharWithNext, pCharWithPrev
