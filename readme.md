@@ -19,3 +19,8 @@ The program will read input from command lines and display the result the same w
 ### python main.py input_filename output_filename
 
 The program will read input from the given input file and stores the results into the given path.
+
+### python main.py input_filename output_filename result_filename
+
+The program will read from input file, write to output file, and compare the output results to the expected answers in 
+given result file.
