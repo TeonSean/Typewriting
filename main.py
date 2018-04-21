@@ -28,10 +28,10 @@ def test_input():
 	re_fname=sys.argv[3]
 	output=list()
 	with open(in_fname, 'r') as fin:
-		line=fin.readline()
-		while line:
-			output.append(translator.translate(line)+'\n')
-			line=fin.readline()
+		lines=fin.readlines()
+	for idx,line in enumerate(lines):
+		print('translating %dth sentence.'%idx)
+		output.append(translator.translate(line)+'\n')
 	total_st = len(output)
 	correct_st = 0
 	total_ch = 0
@@ -39,7 +39,7 @@ def test_input():
 	with open(re_fname, 'r') as fre:
 		result=fre.readlines()
 	for out, re in zip(output, result):
-		if out == re:
+		if out.strip() == re.strip():
 			correct_st+=1
 			total_ch+=len(out)-1
 			correct_ch+=len(out)-1
